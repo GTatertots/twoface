@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-import sqllite
+import sqlite3
 
 
 
@@ -47,6 +47,32 @@ def insert_reply(database_name, post_id, message, replier_id, year, month, day, 
     c.execute("INSERT INTO replies (message, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, post_id, replier_id, year, month, day, hour, minute))
     conn.commit()
     conn.close()
+
+def insert_like(database_name, post_id, liker_id):
+    conn = sqlite3.connect(database_name)
+    c = conn.cursor()
+    c.execute("INSERT INTO likes (post_id, liker_id) VALUES (?, ?)", (post_id, liker_id))
+    conn.commit()
+    conn.close()
+
+def error(args):
+    print('This command requires a subcommand')
+
+
+def main():
+    parser = argparse.ArgumentParser(
+            prog = 'TwoFace Interface',
+            description = 'UI for TwoFace social network')
+    subparsers = parser.add_subparsers(help='sub-command help')
+
+    parser_insert_user = subparsers.add_parser('insertuser',help='adds a user')
+    parser_insert_user.add_argument('email')
+    parser_insert_user.set_defaults(func=add_user)
+    args = parser.parse_args()
+
+    print(args,filename,args.count,args.verbose)
+
+
 
 #import click
 #import os

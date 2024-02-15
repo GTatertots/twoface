@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./twoface adduser gtatertots@gmail.com
+./twoface insert_user gtatertots@gmail.com

@@ -1,6 +1,6 @@
 CREATE TABLE users (
 	user_id INTEGER PRIMARY KEY,
-	email_address TEXT NOT NULL UNIQUE,
+	email_address TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE accounts (
@@ -29,7 +29,7 @@ CREATE TABLE posts (
 	message TEXT NOT NULL, 
 	poster_id INT NOT NULL,
 	year INT,
-	month TEXT IN (january, february, march, april, may, june, july, august, september, october, november, december),
+	month TEXT check(month IN ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december')),
 	day INT, 
 	hour INT,
 	minute INT,
@@ -41,7 +41,7 @@ CREATE TABLE posts (
 CREATE TABLE likes (
 	post_id INT,
 	liker_id INT,
-	PRIMARY KEY(post_id, liker_id)
+	PRIMARY KEY(post_id, liker_id),
 	FOREIGN KEY (liker_id) REFERENCES accounts(account_id)
 		ON DELETE NO ACTION
 		ON UPDATE CASCADE,
@@ -55,11 +55,11 @@ CREATE TABLE replies (
 	message TEXT NOT NULL, 
 	replier_id INT,
 	year INT,
-	month TEXT IN (january, february, march, april, may, june, july, august, september, october, november, december),
+	month TEXT check(month in ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december')),
 	day INT, 
 	hour INT,
 	minute INT,
-	PRIMARY KEY (post_id, replier_id)
+	PRIMARY KEY (post_id, replier_id),
 	FOREIGN KEY (replier_id) REFERENCES accounts(account_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,

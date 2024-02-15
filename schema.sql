@@ -8,14 +8,20 @@ CREATE TABLE accounts (
 	email_address TEXT NOT NULL,
 	username TEXT NOT NULL,
 	FOREIGN KEY (email_address) REFERENCES users(email_address)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 CREATE TABLE followers (
 	follower_id INT NOT NULL,
 	followed_id INT NOT NULL,
 	PRIMARY KEY (follower_id, followed_id),
-	FOREIGN KEY (follower_id) REFERENCES accounts(account_id),
+	FOREIGN KEY (follower_id) REFERENCES accounts(account_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	FOREIGN KEY (followed_id) REFERENCES accounts(account_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 CREATE TABLE posts (
@@ -27,15 +33,21 @@ CREATE TABLE posts (
 	day INT, 
 	hour INT,
 	minute INT,
-	FOREIGN KEY (poster_id) REFERENCES accounts(account_id),
+	FOREIGN KEY (poster_id) REFERENCES accounts(account_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 CREATE TABLE likes (
 	post_id INT,
 	liker_id INT,
 	PRIMARY KEY(post_id, liker_id)
-	FOREIGN KEY (liker_id) REFERENCES accounts(account_id),
+	FOREIGN KEY (liker_id) REFERENCES accounts(account_id)
+		ON DELETE NO ACTION
+		ON UPDATE CASCADE,
 	FOREIGN KEY (post_id) REFERENCES posts(post_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );
 
 CREATE TABLE replies (
@@ -48,6 +60,10 @@ CREATE TABLE replies (
 	hour INT,
 	minute INT,
 	PRIMARY KEY (post_id, replier_id)
-	FOREIGN KEY (replier_id) REFERENCES accounts(account_id),
+	FOREIGN KEY (replier_id) REFERENCES accounts(account_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	FOREIGN KEY (post_id) REFERENCES posts(post_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
 );

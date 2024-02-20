@@ -30,8 +30,8 @@ def insert_user(email_addr):
     with getdb() as con:
         c = con.cursor()
         c.execute("INSERT INTO users (email_address) VALUES (?)", (email_addr))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 @click.command()
 @click.argument('username')
@@ -40,8 +40,8 @@ def insert_account(username, email_addr):
     with getdb() as con:
         c = con.cursor()
         c.execute("INSERT INTO accounts (username, email_address) VALUES (?, ?)", (username, email_addr))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 @click.command()
 @click.argument('follower')
@@ -51,8 +51,8 @@ def insert_follower(follower, followed):
         c = con.cursor()
         #TODO needs to be fixed
         c.execute("INSERT INTO followers (follower, followed) VALUES (?, ?)", (follower, followed))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 @click.command()
 @click.argument('username')
@@ -66,8 +66,8 @@ def insert_post(username, message, year, month, day, hour, minute):
     with getdb() as con: 
         c = con.cursor()
         c.execute("INSERT INTO posts (message, poster_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, poster_id, year, month, day, hour, minute))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 @click.command()
 @click.argument('')
@@ -75,17 +75,17 @@ def insert_reply(post_id, message, replier_id, year, month, day, hour, minute):
     with getdb() as con: 
         c = con.cursor()
         c.execute("INSERT INTO replies (message, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, post_id, replier_id, year, month, day, hour, minute))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 @click.command()
 @click.argument('')
 def insert_like(post_id, liker_id):
     with getdb() as con: 
-        c = conn.cursor()
+        c = con.cursor()
         c.execute("INSERT INTO likes (post_id, liker_id) VALUES (?, ?)", (post_id, liker_id))
-        conn.commit()
-        conn.close()
+        con.commit()
+        con.close()
 
 
 cli.add_command(insert_user)

@@ -41,7 +41,7 @@ def insert_follower(follower, followed):
     with getdb() as con: 
         c = con.cursor()
         #TODO needs to be fixed NOT (cause i fixed it)
-        c.execute("INSERT INTO followers (follower_id, followed_id) VALUES ((SELECT account_id FROM accounts WHERE email_address = ?), (SELECT account_id FROM accounts WHERE email_address = ?))", (follower, followed))
+        c.execute("INSERT INTO followers (follower_id, followed_id) VALUES ((SELECT account_id FROM accounts WHERE username = ?), (SELECT account_id FROM accounts WHERE username = ?))", (follower, followed))
         con.commit()
 
 @click.command()

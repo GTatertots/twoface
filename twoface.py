@@ -49,8 +49,8 @@ def insert_account(username, email_addr):
 def insert_follower(follower, followed): 
     with getdb() as con: 
         c = con.cursor()
-        #TODO needs to be fixed
-        c.execute("INSERT INTO followers (follower, followed) VALUES (?, ?)", (follower, followed))
+        #TODO needs to be fixed NOT (cause i fixed it)
+        c.execute("INSERT INTO followers (follower, followed) VALUES ((SELECT account_id FROM account WHERE email_address = ?), (SELECT account_id FROM account WHERE email_address = ?))", (follower, followed))
         con.commit()
         con.close()
 

@@ -51,15 +51,18 @@ CREATE TABLE likes (
 );
 
 CREATE TABLE replies (
+	reply_id INT PRIMARY KEY,
 	post_id INT ,
 	message TEXT NOT NULL, 
 	replier_id INT,
+	parent_reply_id INT REFERENCES accounts(reply_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE,
 	year INT,
 	month TEXT check(month in ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december')),
 	day INT, 
 	hour INT,
 	minute INT,
-	PRIMARY KEY (post_id, replier_id),
 	FOREIGN KEY (replier_id) REFERENCES accounts(account_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,

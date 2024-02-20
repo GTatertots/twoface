@@ -6,7 +6,7 @@ CREATE TABLE users (
 CREATE TABLE accounts (
 	account_id INT PRIMARY KEY,
 	email_address TEXT NOT NULL,
-	username TEXT NOT NULL,
+	username TEXT NOT NULL UNIQUE,
 	FOREIGN KEY (email_address) REFERENCES users(email_address)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
@@ -29,10 +29,10 @@ CREATE TABLE posts (
 	message TEXT NOT NULL, 
 	poster_id INT NOT NULL,
 	year INT,
-	month TEXT check(month IN ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december')),
-	day INT, 
-	hour INT,
-	minute INT,
+	month INT check(month BETWEEN 1 AND 12)
+	day INT check(day BETWEEN 1 AND 31), 
+	hour INT check(hour BETWEEN 0 AND 23),
+	minute INT check(minute BETWEEN 0 and 59),
 	FOREIGN KEY (poster_id) REFERENCES accounts(account_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
@@ -59,10 +59,10 @@ CREATE TABLE replies (
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	year INT,
-	month TEXT check(month in ('january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december')),
-	day INT, 
-	hour INT,
-	minute INT,
+	month INT check(month BETWEEN 1 AND 12)
+	day INT check(day BETWEEN 1 AND 31), 
+	hour INT check(hour BETWEEN 0 AND 23),
+	minute INT check(minute BETWEEN 0 AND 59),
 	FOREIGN KEY (replier_id) REFERENCES accounts(account_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,

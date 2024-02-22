@@ -1,5 +1,7 @@
 #!/bin/bash
+rm -f twoface.db
 
+sqlite3 twoface.db < schema.sql
 
 # Function to generate a random gamertag-like username
 generate_username() {

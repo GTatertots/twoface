@@ -88,6 +88,14 @@ def insert_like(username, posttitle):
         c.execute("INSERT INTO likes (post_id, liker_id) VALUES (?, ?)", (post_id, liker_id))
         con.commit()
 
+@click.command()
+@click.argument('username')
+def get_feed(username):
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute("SELECT posts.message, count(1) AS likes FROM accounts WHERE accounts.username = ? JOIN followers ON follower_id == account_id JOIN posts ON poster_id == followed_id JOIN likes ON likes.post_id == posts.post_id GROUP BY post_id ORDER BY year, month, day, hour, minute DESC", (username))
+        con.commit()
+
 
 cli.add_command(insert_user)
 cli.add_command(insert_account)
@@ -95,6 +103,7 @@ cli.add_command(insert_follower)
 cli.add_command(insert_post)
 cli.add_command(insert_reply)
 cli.add_command(insert_like)
+cli.add_command(get_feed)
 cli()
 
 #def main():

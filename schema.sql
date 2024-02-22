@@ -29,7 +29,7 @@ CREATE TABLE posts (
 	message TEXT NOT NULL, 
 	poster_id INT NOT NULL,
 	year INT,
-	month INT check(month BETWEEN 1 AND 12)
+	month INT check(month BETWEEN 1 AND 12),
 	day INT check(day BETWEEN 1 AND 31), 
 	hour INT check(hour BETWEEN 0 AND 23),
 	minute INT check(minute BETWEEN 0 and 59),
@@ -59,7 +59,7 @@ CREATE TABLE replies (
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	year INT,
-	month INT check(month BETWEEN 1 AND 12)
+	month INT check(month BETWEEN 1 AND 12),
 	day INT check(day BETWEEN 1 AND 31), 
 	hour INT check(hour BETWEEN 0 AND 23),
 	minute INT check(minute BETWEEN 0 AND 59),

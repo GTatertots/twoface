@@ -6,14 +6,25 @@ JOIN posts ON
 JOIN likes ON 
 	likes.post_id == posts.post_id,
 JOIN accounts AS A ON 
-	liker_id = A.account_id,
+	liker_id == A.account_id,
 GROUP BY liker_id,
-SORT BY like_amount DESC
+ORDER BY like_amount DESC
 
-SELECT posts.message
+SELECT posts.message, count(1) AS likes
 FROM accounts, 
 JOIN followers ON
 	follower_id == account_id,
 JOIN posts ON
 	poster_id == followed_id,
+JOIN likes ON
+	likes.post_id == posts.post_id
+GROUP BY post_id
+ORDER BY year, month, day, hour, minute DESC;
 
+SELECT accounts.username, count(1) as follower_count
+FROM followers,
+JOIN accounts ON 
+	followed_id == account_id,
+GROUP BY followed_id,
+ORDER BY follower_amount DESC,
+LIMIT 10;

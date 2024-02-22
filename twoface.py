@@ -45,6 +45,16 @@ def insert_follower(follower, followed):
         con.commit()
 
 @click.command()
+@click.argument('follower')
+@click.argument('followed')
+def unfollow(follower, followed):
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute("DELETE FROM followers WHERE follower_id = (SELECT account_id FROM accounts WHERE username = ?) AND (SELECT account_id FROM accounts WHERE username = ?)", (follower, followed))
+        con.commit()
+
+
+@click.command()
 @click.argument('username')
 @click.argument('title')
 @click.argument('message')
@@ -58,6 +68,15 @@ def insert_post(username, title, message):
         c = con.cursor()
         c.execute("INSERT INTO posts (poster_id, title, message, year, month, day, hour, minute) VALUES ((SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?, ?, ?)", (username, title, message, year, month, day, hour, minute))
         con.commit()
+        
+@click.command()
+@click.argument('title')
+def delete_post(title):
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute("DELETE FROM posts WHERE title = ?", (title,))
+        con.commit()
+    
 
 @click.command()
 @click.argument('username')
@@ -104,6 +123,8 @@ cli.add_command(insert_post)
 cli.add_command(insert_reply)
 cli.add_command(insert_like)
 cli.add_command(get_feed)
+cli.add_command(unfollow)
+cli.add_command(delete_post)
 cli()
 
 #def main():

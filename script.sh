@@ -68,11 +68,13 @@ for ((i=0 i<${#created_accounts[@]}; i++)); do
     message="cool post bro"
 
     python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message" true
-
+done
  
+#make likes
 for ((i=0 i<${#created_accounts[@]}; i++)); do
     user=${created_accounts[i]}
     post_index=$((RANDOM % ${#created_posts[@]}))
     posttitle=${created_posts[post_index]}
 
     python3 twoface.py insert-like "$user" "$posttitle"
+done

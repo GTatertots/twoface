@@ -50,6 +50,19 @@ CREATE TABLE likes (
 		ON UPDATE CASCADE
 );
 
+CREATE TABLE reply_likes (
+	reply_id INTEGER,
+	liker_id INTEGER,
+	PRIMARY KEY(reply_id, liker_id),
+	FOREIGN KEY (liker_id) REFERENCES accounts(account_id)
+		ON DELETE NO ACTION
+		ON UPDATE CASCADE,
+	FOREIGN KEY (reply_id) REFERENCES replies(post_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+
 CREATE TABLE replies (
 	reply_id INTEGER PRIMARY KEY,
 	post_id INTEGER ,

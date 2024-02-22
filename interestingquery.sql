@@ -28,3 +28,12 @@ JOIN accounts ON
 GROUP BY followed_id,
 ORDER BY follower_amount DESC,
 LIMIT 10;
+
+SELECT replies.message, count(1) AS likes
+FROM posts
+JOIN replies ON
+	replies.post_id == posts.post_id
+JOIN reply_likes ON
+	replies.reply_id = reply_likes.reply_id
+GROUP BY reply_likes.reply_id
+ORDER BY LIKES DESC;

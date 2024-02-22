@@ -46,3 +46,33 @@ for ((i=0; i<${#created_accounts[@]}; i++)); do
         python3 twoface.py insert-follower "$follower" "$followed"
     fi
 done
+
+created_posts=()
+
+# Make some posts (from accounts created earlier)
+for ((i=0; i<${#created_accounts[@]}; i++)); do
+    user=${created_accounts[i]}
+    title="$user post 1"
+    created_posts+=("$title")
+    message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+    python3 twoface.py insert-post "$user" "$title" "$message"
+done
+
+#make some replies (from various accounts)
+
+for ((i=0 i<${#created_accounts[@]}; i++)); do
+    user=${created_accounts[i]}
+    post_index=$((RANDOM % ${#created_posts[@]}))
+    posttitle=${created_posts[post_index]}
+    title="reply to $posttitle"
+    message="cool post bro"
+
+    python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message"
+
+ 
+for ((i=0 i<${#created_accounts[@]}; i++)); do
+    user=${created_accounts[i]}
+    post_index=$((RANDOM % ${#created_posts[@]}))
+    posttitle=${created_posts[post_index]}
+
+    python3 twoface.py insert-like "$user" "$posttitle"

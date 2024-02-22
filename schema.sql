@@ -26,6 +26,7 @@ CREATE TABLE followers (
 
 CREATE TABLE posts (
 	post_id INTEGER PRIMARY KEY,
+	title TEXT NOT NULL,
 	message TEXT NOT NULL, 
 	poster_id INTEGER NOT NULL,
 	year INTEGER,
@@ -66,6 +67,7 @@ CREATE TABLE reply_likes (
 CREATE TABLE replies (
 	reply_id INTEGER PRIMARY KEY,
 	post_id INTEGER ,
+	title TEXT NOT NULL,
 	message TEXT NOT NULL, 
 	replier_id INTEGER,
 	parent_reply_id INT REFERENCES accounts(reply_id)

@@ -4,6 +4,7 @@ import click
 import os
 import sqlite3
 import sys
+from datetime import datetime
 
 DB_FILE = 'twoface.db'
 
@@ -40,35 +41,43 @@ def insert_account(username, email_addr):
 def insert_follower(follower, followed): 
     with getdb() as con: 
         c = con.cursor()
-        #TODO needs to be fixed NOT (cause i fixed it)
         c.execute("INSERT INTO followers (follower_id, followed_id) VALUES ((SELECT account_id FROM accounts WHERE username = ?), (SELECT account_id FROM accounts WHERE username = ?))", (follower, followed))
         con.commit()
 
 @click.command()
 @click.argument('username')
 @click.argument('message')
-@click.argument('year')
-@click.argument('month')
-@click.argument('day')
-@click.argument('hour')
-@click.argument('minute')
-def insert_post(username, message, year, month, day, hour, minute):
+def insert_post(username, message):
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
+    hour =  datetime.now().hour
+    minute = datetime.now().minute
     with getdb() as con: 
         c = con.cursor()
-        c.execute("INSERT INTO posts (message, poster_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, poster_id, year, month, day, hour, minute))
+        c.execute("INSERT INTO posts (poster_id, message, year, month, day, hour, minute) VALUES ((SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?, ?)", (username, message, year, month, day, hour, minute))
         con.commit()
 
 @click.command()
-@click.argument('')
-def insert_reply(post_id, message, replier_id, year, month, day, hour, minute): 
+@click.argument('username')
+@click.argument('posttitle')
+@click.argument('title')
+@click.argument('message')
+def insert_reply(username, posttitle, title, message):  
+    year = datetime.now().year
+    month = datetime.now().month
+    day = datetime.now().day
+    hour =  datetime.now().hour
+    minute = datetime.now().minute
     with getdb() as con: 
         c = con.cursor()
-        c.execute("INSERT INTO replies (message, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, post_id, replier_id, year, month, day, hour, minute))
+        c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, post_id, replier_id, year, month, day, hour, minute))
         con.commit()
 
 @click.command()
-@click.argument('')
-def insert_like(post_id, liker_id):
+@click.argument('username')
+@click.argument('posttitle')
+def insert_like(username, posttitle):
     with getdb() as con: 
         c = con.cursor()
         c.execute("INSERT INTO likes (post_id, liker_id) VALUES (?, ?)", (post_id, liker_id))

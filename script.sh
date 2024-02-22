@@ -67,7 +67,7 @@ for ((i=0 i<${#created_accounts[@]}; i++)); do
     title="reply to $posttitle"
     message="cool post bro"
 
-    python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message"
+    python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message" true
 
  
 for ((i=0 i<${#created_accounts[@]}; i++)); do

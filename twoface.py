@@ -46,8 +46,9 @@ def insert_follower(follower, followed):
 
 @click.command()
 @click.argument('username')
+@click.argument('title')
 @click.argument('message')
-def insert_post(username, message):
+def insert_post(username, title, message):
     year = datetime.now().year
     month = datetime.now().month
     day = datetime.now().day
@@ -55,7 +56,7 @@ def insert_post(username, message):
     minute = datetime.now().minute
     with getdb() as con: 
         c = con.cursor()
-        c.execute("INSERT INTO posts (poster_id, message, year, month, day, hour, minute) VALUES ((SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?, ?)", (username, message, year, month, day, hour, minute))
+        c.execute("INSERT INTO posts (poster_id, title, message, year, month, day, hour, minute) VALUES ((SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?, ?, ?)", (username, title, message, year, month, day, hour, minute))
         con.commit()
 
 @click.command()
@@ -72,10 +73,10 @@ def insert_reply(username, posttitle, title, message, reply_to_post):
     minute = datetime.now().minute
     with getdb() as con: 
         c = con.cursor()
-        if reply_to_post:
-            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT post_id FROM posts WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?)", (message, title, post_id, replier_id, year, month, day, hour, minute))
+        if reply_to_post == "true":
+            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT post_id FROM posts WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?)", (message, title, posttitle, username, year, month, day, hour, minute))
         else:
-            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT reply_id FROM replies WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?)", (message, title, parent_reply_id, replier_id, year, month, day, hour, minute))
+            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT reply_id FROM replies WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?)", (message, title, posttitle, username, year, month, day, hour, minute))
         con.commit()
 
 @click.command()

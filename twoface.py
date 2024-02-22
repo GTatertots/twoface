@@ -63,7 +63,8 @@ def insert_post(username, message):
 @click.argument('posttitle')
 @click.argument('title')
 @click.argument('message')
-def insert_reply(username, posttitle, title, message):  
+@click.argument('reply_to_post')
+def insert_reply(username, posttitle, title, message, reply_to_post):
     year = datetime.now().year
     month = datetime.now().month
     day = datetime.now().day
@@ -71,7 +72,10 @@ def insert_reply(username, posttitle, title, message):
     minute = datetime.now().minute
     with getdb() as con: 
         c = con.cursor()
-        c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, ?, ?, ?, ?, ?)", (message, post_id, replier_id, year, month, day, hour, minute))
+        if reply_to_post:
+            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT post_id FROM posts WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?)", (message, title, post_id, replier_id, year, month, day, hour, minute))
+        else:
+            c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT reply_id FROM replies WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?)", (message, title, parent_reply_id, replier_id, year, month, day, hour, minute))
         con.commit()
 
 @click.command()

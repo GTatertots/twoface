@@ -26,6 +26,7 @@ CREATE TABLE followers (
 
 CREATE TABLE posts (
 	post_id INTEGER PRIMARY KEY,
+	title TEXT NOT NULL,
 	message TEXT NOT NULL, 
 	poster_id INTEGER NOT NULL,
 	year INTEGER,
@@ -50,9 +51,23 @@ CREATE TABLE likes (
 		ON UPDATE CASCADE
 );
 
+CREATE TABLE reply_likes (
+	reply_id INTEGER,
+	liker_id INTEGER,
+	PRIMARY KEY(reply_id, liker_id),
+	FOREIGN KEY (liker_id) REFERENCES accounts(account_id)
+		ON DELETE NO ACTION
+		ON UPDATE CASCADE,
+	FOREIGN KEY (reply_id) REFERENCES replies(post_id)
+		ON DELETE CASCADE
+		ON UPDATE CASCADE
+);
+
+
 CREATE TABLE replies (
 	reply_id INTEGER PRIMARY KEY,
 	post_id INTEGER ,
+	title TEXT NOT NULL,
 	message TEXT NOT NULL, 
 	replier_id INTEGER,
 	parent_reply_id INT REFERENCES accounts(reply_id)

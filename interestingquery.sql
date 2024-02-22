@@ -11,14 +11,14 @@ GROUP BY liker_id,
 ORDER BY like_amount DESC
 
 SELECT posts.message, count(1) AS likes
-FROM accounts, 
+FROM accounts 
 JOIN followers ON
-	follower_id == account_id,
+	follower_id == account_id
 JOIN posts ON
-	poster_id == followed_id,
+	poster_id == followed_id
 JOIN likes ON
 	likes.post_id == posts.post_id
-GROUP BY post_id
+GROUP BY likes.post_id
 ORDER BY year, month, day, hour, minute DESC;
 
 SELECT accounts.username, count(1) as follower_count

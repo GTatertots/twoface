@@ -101,3 +101,21 @@ for ((i=0; i<1000; i++)); do
         python3 twoface.py insert-like "$user" "$posttitle"
     fi
 done
+
+
+reply_likes=()
+#make likes
+for ((i=0; i<100; i++)); do
+    user_index=$((RANDOM % ${#created_accounts[@]}))
+    user=${created_accounts[user_index]}
+    reply_index=$((RANDOM % ${#replies[@]}))
+    reply_title=${replies[reply_index]}
+
+    like="$user,$reply_title"
+
+    # Check if the like already exists in the likes array
+    if [[ ! " ${reply_likes[@]} " =~ " $like " ]]; then
+        reply_likes+=("$like")  
+        python3 twoface.py reply-like "$user" "$reply_title"
+    fi
+done

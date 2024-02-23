@@ -118,19 +118,31 @@ def insert_like(username, posttitle):
     print("--> user ", username, "liked ", posttitle)
 
 @click.command()
+@click.argument('username')
+@click.argument('posttitle')
+def reply_like(username, posttitle):
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute("INSERT INTO reply_likes (reply_id, liker_id) VALUES ((SELECT reply_id FROM replies WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?))", (posttitle, username))
+        con.commit()
+    print("--> user ", username, "liked ", posttitle)
+
+@click.command()
 @click.argument('posttitle')
 def replies_to_post(posttitle):
     with getdb() as con: 
         c = con.cursor()
-        c.execute('''SELECT replies.title, replies.message, count(1) AS likes 
+        c.execute('''SELECT accounts.username, replies.message, count(1) AS likes 
 FROM posts
 JOIN replies ON
 	replies.post_id = posts.post_id
-JOIN reply_likes ON
+LEFT JOIN reply_likes ON
 	replies.reply_id = reply_likes.reply_id
+JOIN accounts ON
+    replies.replier_id = account_id
 WHERE posts.title = ?
 GROUP BY reply_likes.reply_id
-ORDER BY LIKES DESC;''', (posttitle,))
+ORDER BY likes DESC;''', (posttitle,))
         list = c.fetchall()
         for x in list:
             print('\t',x)
@@ -196,6 +208,7 @@ cli.add_command(insert_follower)
 cli.add_command(insert_post)
 cli.add_command(insert_reply)
 cli.add_command(insert_like)
+cli.add_command(reply_like)
 cli.add_command(get_feed)
 cli.add_command(unfollow)
 cli.add_command(delete_post)

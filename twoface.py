@@ -108,6 +108,22 @@ def insert_like(username, posttitle):
         con.commit()
 
 @click.command()
+@click.argument('title')
+def replies_to_post(username, posttitle):
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute('''SELECT replies.message, count(1) AS likes
+FROM posts
+WHERE title = ?
+JOIN replies ON
+	replies.post_id == posts.post_id
+JOIN reply_likes ON
+	replies.reply_id = reply_likes.reply_id
+GROUP BY reply_likes.reply_id
+ORDER BY LIKES DESC;''', (title))
+        con.commit()
+
+@click.command()
 @click.argument('username')
 def get_feed(username):
     with getdb() as con: 
@@ -137,6 +153,7 @@ def find_stalker():
         c.execute('''
 SELECT A.username AS greatest_liker, count(1) AS like_amount
 FROM accounts
+WHERE accounts.username = ? 
 JOIN posts ON
 	poster_id == accounts.account_id
 JOIN likes ON 
@@ -145,7 +162,7 @@ JOIN accounts AS A ON
 	liker_id == A.account_id
 GROUP BY liker_id
 ORDER BY like_amount DESC;
-''')
+''', (username))
         con.commit()
 
 cli.add_command(insert_user)
@@ -159,6 +176,7 @@ cli.add_command(unfollow)
 cli.add_command(delete_post)
 cli.add_command(most_popular)
 cli.add_command(find_stalker)
+cli.add_command(replies_to_post)
 cli()
 
 #def main():

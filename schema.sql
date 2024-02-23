@@ -26,7 +26,7 @@ CREATE TABLE followers (
 
 CREATE TABLE posts (
 	post_id INTEGER PRIMARY KEY,
-	title TEXT PRIMARY KEY,
+	title TEXT UNIQUE NOT NULL,
 	message TEXT NOT NULL, 
 	poster_id INTEGER NOT NULL,
 	year INTEGER,

@@ -116,6 +116,38 @@ def get_feed(username):
         con.commit()
 
 
+@click.command()
+def most_popular():
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute('''
+SELECT accounts.username, count(1) as follower_count
+FROM followers
+JOIN accounts ON 
+	followed_id == account_id
+GROUP BY followed_id
+ORDER BY follower_count DESC
+LIMIT 10;''')
+        con.commit()
+
+@click.command()
+def find_stalker():
+    with getdb() as con: 
+        c = con.cursor()
+        c.execute('''
+SELECT A.username AS greatest_liker, count(1) AS like_amount
+FROM accounts
+JOIN posts ON
+	poster_id == accounts.account_id
+JOIN likes ON 
+	likes.post_id == posts.post_id
+JOIN accounts AS A ON 
+	liker_id == A.account_id
+GROUP BY liker_id
+ORDER BY like_amount DESC;
+''')
+        con.commit()
+
 cli.add_command(insert_user)
 cli.add_command(insert_account)
 cli.add_command(insert_follower)
@@ -125,6 +157,8 @@ cli.add_command(insert_like)
 cli.add_command(get_feed)
 cli.add_command(unfollow)
 cli.add_command(delete_post)
+cli.add_command(most_popular)
+cli.add_command(find_stalker)
 cli()
 
 #def main():

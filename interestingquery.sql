@@ -1,3 +1,4 @@
+// find greatest liker
 SELECT A.username AS greatest_liker, count(1) AS like_amount
 FROM accounts
 JOIN posts ON
@@ -9,6 +10,7 @@ JOIN accounts AS A ON
 GROUP BY liker_id
 ORDER BY like_amount DESC;
 
+// display feed
 SELECT posts.message, count(1) AS likes
 FROM accounts 
 JOIN followers ON
@@ -20,6 +22,7 @@ JOIN likes ON
 GROUP BY likes.post_id
 ORDER BY year, month, day, hour, minute DESC;
 
+// display who has the most followers
 SELECT accounts.username, count(1) as follower_count
 FROM followers
 JOIN accounts ON 
@@ -28,6 +31,7 @@ GROUP BY followed_id
 ORDER BY follower_count DESC
 LIMIT 10;
 
+// display replies to post
 SELECT replies.message, count(1) AS likes
 FROM posts
 JOIN replies ON

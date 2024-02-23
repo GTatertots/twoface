@@ -122,16 +122,18 @@ def insert_like(username, posttitle):
 def replies_to_post(posttitle):
     with getdb() as con: 
         c = con.cursor()
-        c.execute('''SELECT replies.message, count(1) AS likes 
+        c.execute('''SELECT replies.title, replies.message, count(1) AS likes 
 FROM posts
-WHERE title = (?)
 JOIN replies ON
-	replies.post_id == posts.post_id
+	replies.post_id = posts.post_id
 JOIN reply_likes ON
 	replies.reply_id = reply_likes.reply_id
+WHERE posts.title = ?
 GROUP BY reply_likes.reply_id
 ORDER BY LIKES DESC;''', (posttitle,))
-        print(c.fetchone())
+        list = c.fetchall()
+        for x in list:
+            print('\t',x)
         con.commit()
 
 @click.command()
@@ -139,11 +141,13 @@ ORDER BY LIKES DESC;''', (posttitle,))
 def get_feed(username):
     with getdb() as con: 
         c = con.cursor()
-        c.execute("SELECT posts.message, count(1) AS likes FROM accounts JOIN followers ON follower_id == account_id JOIN posts ON poster_id == followed_id JOIN likes ON likes.post_id == posts.post_id WHERE accounts.username = ? GROUP BY likes.post_id ORDER BY year, month, day, hour, minute DESC", (username,))
+        c.execute("SELECT posts.title, posts.message, count(1) AS likes FROM accounts JOIN followers ON follower_id == account_id JOIN posts ON poster_id == followed_id JOIN likes ON likes.post_id == posts.post_id WHERE accounts.username = ? GROUP BY likes.post_id ORDER BY year, month, day, hour, minute DESC", (username,))
         list = c.fetchall()
+        con.commit()
         for x in list:
             print(x)
-        con.commit()
+            title, _, _ = x
+            replies_to_post.callback(title)
 
 
 @click.command()

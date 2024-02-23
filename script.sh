@@ -62,7 +62,7 @@ done
 
 #make some replies (from various accounts)
 
-for ((i=0 i<${#created_accounts[@]}; i++)); do
+for ((i=0; i<${#created_accounts[@]}; i++)); do
     user=${created_accounts[i]}
     post_index=$((RANDOM % ${#created_posts[@]}))
     posttitle=${created_posts[post_index]}
@@ -73,7 +73,7 @@ for ((i=0 i<${#created_accounts[@]}; i++)); do
 done
  
 #make likes
-for ((i=0 i<${#created_accounts[@]}; i++)); do
+for ((i=0; i<${#created_accounts[@]}; i++)); do
     user=${created_accounts[i]}
     post_index=$((RANDOM % ${#created_posts[@]}))
     posttitle=${created_posts[post_index]}

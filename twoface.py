@@ -25,6 +25,7 @@ def insert_user(email_addr):
         c = con.cursor()
         c.execute("INSERT INTO users (email_address) VALUES (?)", (email_addr,))
         con.commit()
+    print("--> created user:", email_addr)
 
 @click.command()
 @click.argument('username')
@@ -34,6 +35,8 @@ def insert_account(username, email_addr):
         c = con.cursor()
         c.execute("INSERT INTO accounts (username, email_address) VALUES (?, ?)", (username, email_addr))
         con.commit()
+    print("--> user ", email_addr, "created account: ", username)
+
 
 @click.command()
 @click.argument('follower')
@@ -43,6 +46,7 @@ def insert_follower(follower, followed):
         c = con.cursor()
         c.execute("INSERT INTO followers (follower_id, followed_id) VALUES ((SELECT account_id FROM accounts WHERE username = ?), (SELECT account_id FROM accounts WHERE username = ?))", (follower, followed))
         con.commit()
+    print("--> user ", followed, "followed user: ", followed)
 
 @click.command()
 @click.argument('follower')
@@ -52,6 +56,7 @@ def unfollow(follower, followed):
         c = con.cursor()
         c.execute("DELETE FROM followers WHERE follower_id = (SELECT account_id FROM accounts WHERE username = ?) AND (SELECT account_id FROM accounts WHERE username = ?)", (follower, followed))
         con.commit()
+    print("--> user ", follower, "created account: ", followed)
 
 
 @click.command()
@@ -68,6 +73,8 @@ def insert_post(username, title, message):
         c = con.cursor()
         c.execute("INSERT INTO posts (poster_id, title, message, year, month, day, hour, minute) VALUES ((SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?, ?, ?)", (username, title, message, year, month, day, hour, minute))
         con.commit()
+    print("--> account ", username, "posted with title: ", title)
+
         
 @click.command()
 @click.argument('title')
@@ -76,6 +83,7 @@ def delete_post(title):
         c = con.cursor()
         c.execute("DELETE FROM posts WHERE title = ?", (title,))
         con.commit()
+    print("--> post deleted")
     
 
 @click.command()
@@ -97,6 +105,7 @@ def insert_reply(username, posttitle, title, message, reply_to_post):
         else:
             c.execute("INSERT INTO replies (message, title, post_id, replier_id, year, month, day, hour, minute) VALUES (?, ?, (SELECT reply_id FROM replies WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?), ?, ?, ?, ?, ?)", (message, title, posttitle, username, year, month, day, hour, minute))
         con.commit()
+    print("--> user ", username, "replied to ", posttitle)
 
 @click.command()
 @click.argument('username')
@@ -104,23 +113,25 @@ def insert_reply(username, posttitle, title, message, reply_to_post):
 def insert_like(username, posttitle):
     with getdb() as con: 
         c = con.cursor()
-        c.execute("INSERT INTO likes (post_id, liker_id) VALUES (?, ?)", (post_id, liker_id))
+        c.execute("INSERT INTO likes (post_id, liker_id) VALUES ((SELECT post_id FROM posts WHERE title = ?), (SELECT account_id FROM accounts WHERE username = ?))", (posttitle, username))
         con.commit()
+    print("--> user ", username, "liked ", posttitle)
 
 @click.command()
-@click.argument('title')
-def replies_to_post(username, posttitle):
+@click.argument('posttitle')
+def replies_to_post(posttitle):
     with getdb() as con: 
         c = con.cursor()
-        c.execute('''SELECT replies.message, count(1) AS likes
+        c.execute('''SELECT replies.message, count(1) AS likes 
 FROM posts
-WHERE title = ?
+WHERE title = (?)
 JOIN replies ON
 	replies.post_id == posts.post_id
 JOIN reply_likes ON
 	replies.reply_id = reply_likes.reply_id
 GROUP BY reply_likes.reply_id
-ORDER BY LIKES DESC;''', (title))
+ORDER BY LIKES DESC;''', (posttitle,))
+        print(c.fetchone())
         con.commit()
 
 @click.command()
@@ -128,7 +139,10 @@ ORDER BY LIKES DESC;''', (title))
 def get_feed(username):
     with getdb() as con: 
         c = con.cursor()
-        c.execute("SELECT posts.message, count(1) AS likes FROM accounts WHERE accounts.username = ? JOIN followers ON follower_id == account_id JOIN posts ON poster_id == followed_id JOIN likes ON likes.post_id == posts.post_id GROUP BY likes.post_id ORDER BY year, month, day, hour, minute DESC", (username))
+        c.execute("SELECT posts.message, count(1) AS likes FROM accounts JOIN followers ON follower_id == account_id JOIN posts ON poster_id == followed_id JOIN likes ON likes.post_id == posts.post_id WHERE accounts.username = ? GROUP BY likes.post_id ORDER BY year, month, day, hour, minute DESC", (username,))
+        list = c.fetchall()
+        for x in list:
+            print(x)
         con.commit()
 
 
@@ -136,33 +150,40 @@ def get_feed(username):
 def most_popular():
     with getdb() as con: 
         c = con.cursor()
-        c.execute('''
-SELECT accounts.username, count(1) as follower_count
+        c.execute(
+'''SELECT accounts.username, count(1) as follower_count
 FROM followers
 JOIN accounts ON 
 	followed_id == account_id
 GROUP BY followed_id
 ORDER BY follower_count DESC
 LIMIT 10;''')
+        list = c.fetchall()
+        for x in list:
+            print(x)
         con.commit()
 
 @click.command()
-def find_stalker():
+@click.argument('username')
+def find_stalker(username):
     with getdb() as con: 
         c = con.cursor()
-        c.execute('''
-SELECT A.username AS greatest_liker, count(1) AS like_amount
+        c.execute(
+'''SELECT A.username AS greatest_liker, count(1) AS like_amount
 FROM accounts
-WHERE accounts.username = ? 
 JOIN posts ON
 	poster_id == accounts.account_id
 JOIN likes ON 
 	likes.post_id == posts.post_id
 JOIN accounts AS A ON 
 	liker_id == A.account_id
+WHERE accounts.username = ? 
 GROUP BY liker_id
 ORDER BY like_amount DESC;
-''', (username))
+''', (username,))
+        list = c.fetchall()
+        for x in list:
+            print(x)
         con.commit()
 
 cli.add_command(insert_user)

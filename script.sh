@@ -18,8 +18,8 @@ generate_email() {
 # Array to store the usernames of created accounts
 created_accounts=()
 
-# Add 20 accounts
-for ((i=1; i<=20; i++)); do
+# Add 40 accounts
+for ((i=1; i<=10; i++)); do
     # Generate username
     username=$(generate_username)
 
@@ -36,15 +36,19 @@ for ((i=1; i<=20; i++)); do
     created_accounts+=("$username")
 done
 
+follows=()
 # Make some users follow each other (from accounts created earlier)
-for ((i=0; i<${#created_accounts[@]}; i++)); do
-    follower=${created_accounts[i]}
+for ((i=0; i<40; i++)); do
+    follower_index=$((RANDOM % ${#created_accounts[@]}))
+    follower=${created_accounts[follower_index]}
     followed_index=$((RANDOM % ${#created_accounts[@]}))
     followed=${created_accounts[followed_index]}
 
+    follow="$follower,$followed"
     # Check if follower and followed are different
-    if [ "$follower" != "$followed" ]; then
+    if [ "$follower" != "$followed" ] && [[ ! " ${follows[@]} " =~ " $follow " ]]; then
         # Create follow relationship
+        follows+=("$follow")
         python3 twoface.py insert-follower "$follower" "$followed"
     fi
 done
@@ -52,31 +56,48 @@ done
 created_posts=()
 
 # Make some posts (from accounts created earlier)
-for ((i=0; i<${#created_accounts[@]}; i++)); do
-    user=${created_accounts[i]}
-    title="$user post 1"
-    created_posts+=("$title")
-    message="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-    python3 twoface.py insert-post "$user" "$title" "$message"
+for ((i=0; i<100; i++)); do
+    user_index=$((RANDOM % ${#created_accounts[@]}))
+    user=${created_accounts[user_index]}
+    title="$user's post #$((RANDOM % 2000))"
+    message="this is a cool post i'm making"
+    
+    if [[ ! " ${created_posts[@]} " =~ " $title " ]];then
+        created_posts+=("$title")
+        python3 twoface.py insert-post "$user" "$title" "$message"
+    fi
 done
 
 #make some replies (from various accounts)
 
-for ((i=0; i<${#created_accounts[@]}; i++)); do
-    user=${created_accounts[i]}
+replies=()
+for ((i=0; i<100; i++)); do 
+    user_index=$((RANDOM % ${#created_accounts[@]}))
+    user=${created_accounts[user_index]}
     post_index=$((RANDOM % ${#created_posts[@]}))
     posttitle=${created_posts[post_index]}
-    title="reply to $posttitle"
+    title="reply to $posttitle #$((RANDOM % 2000))"
     message="cool post bro"
-
-    python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message" true
+     
+    if [[ ! " ${replies[@]} " =~ " $title " ]];then
+        replies+=("$title")
+        python3 twoface.py insert-reply "$user" "$posttitle" "$title" "$message" true
+    fi
 done
  
+likes=()
 #make likes
-for ((i=0; i<${#created_accounts[@]}; i++)); do
-    user=${created_accounts[i]}
+for ((i=0; i<1000; i++)); do
+    user_index=$((RANDOM % ${#created_accounts[@]}))
+    user=${created_accounts[user_index]}
     post_index=$((RANDOM % ${#created_posts[@]}))
     posttitle=${created_posts[post_index]}
 
-    python3 twoface.py insert-like "$user" "$posttitle"
+    like="$user,$posttitle"
+
+    # Check if the like already exists in the likes array
+    if [[ ! " ${likes[@]} " =~ " $like " ]]; then
+        likes+=("$like")  
+        python3 twoface.py insert-like "$user" "$posttitle"
+    fi
 done

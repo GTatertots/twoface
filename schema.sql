@@ -58,7 +58,7 @@ CREATE TABLE reply_likes (
 	FOREIGN KEY (liker_id) REFERENCES accounts(account_id)
 		ON DELETE NO ACTION
 		ON UPDATE CASCADE,
-	FOREIGN KEY (reply_id) REFERENCES replies(post_id)
+	FOREIGN KEY (reply_id) REFERENCES replies(reply_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
 );
@@ -70,7 +70,7 @@ CREATE TABLE replies (
 	title TEXT NOT NULL,
 	message TEXT NOT NULL, 
 	replier_id INTEGER,
-	parent_reply_id INT REFERENCES accounts(reply_id)
+	parent_reply_id INT REFERENCES replies(reply_id)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
 	year INTEGER,
